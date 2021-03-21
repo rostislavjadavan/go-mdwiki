@@ -1,8 +1,10 @@
+![](logo.png)
+
 # go-mdwiki
 
 ## Basic Golang Markdown Wiki
 
-- super simple :)
+- super simple 😊
 - one binary + config file
 - inspired by go-bwiki
 - no user accounts
