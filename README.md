@@ -25,6 +25,11 @@ storage: .storage
 - host & post - web server properties
 - storage is directory where pages going to be stored
 
-## Screenshot
+## Screenshots
 
+
+#### Page
 ![](screenshot.png)
+
+#### Editor
+![](screenshot_editor.png)
