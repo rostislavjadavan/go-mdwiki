@@ -11,10 +11,24 @@
         <a href="/">Home</a> | <a href="/list">List of all pages</a>
         <hr />
         <h1>Edit {{.Data.Filename}}</h1>
-        <form action="/edit/{{.Data.Filename}}" method="POST">            
-            <textarea name="content" cols="120" rows="50">{{.Data.RawContent}}</textarea><br />            
-            <input type="submit" value="Save" /> <a href="/{{.Data.Filename}}">Cancel</a>
+        <form action="/edit/{{.Data.Filename}}" method="POST">
+            <div class="editor">{{.Data.RawContent}}</div>
+            <input id="content" type="hidden" name="content" />
+            <input id="save" type="submit" value="Save" /> <a href="/{{.Data.Filename}}">Cancel</a>
         </form>
+        <script type="module">
+            import { CodeJar } from '/static/codejar.js'
+            window.addEventListener('DOMContentLoaded', (event) => {                
+                const highlight = (editor) => {
+                    const code = editor.textContent
+                    editor.innerHTML = code
+                }
+                let jar = CodeJar(document.querySelector('.editor'), highlight)
+                let submit = document.getElementById("save").addEventListener("click", function (e) {
+                    document.getElementById("content").value = document.querySelector('.editor').innerText;
+                });
+            });
+        </script>
         {{.Footer}}
     </div>
 </body>

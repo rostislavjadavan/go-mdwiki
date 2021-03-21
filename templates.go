@@ -36,6 +36,9 @@ var tpl_footer string
 //go:embed templates/style.css
 var css_style string
 
+//go:embed templates/codejar.js
+var js_codejar string
+
 type TemplateData struct {
 	Data   interface{}
 	Head   string

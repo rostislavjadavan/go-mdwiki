@@ -1,3 +1,17 @@
+/* codejar styles: https://github.com/antonmedv/codejar */
+.editor {
+    font-family: monospace;
+    font-size: 14px;
+    font-weight: 400;
+    height: 500px;
+    letter-spacing: normal;
+    line-height: 20px;
+    padding: 10px;
+    margin-bottom: 25px;
+    tab-size: 4;
+    border: 1px solid #d1d5da;
+}
+
 /* https://github.com/sindresorhus/github-markdown-css */
 
 .markdown-body {

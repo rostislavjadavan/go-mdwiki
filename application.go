@@ -23,6 +23,7 @@ func main() {
 	e := echo.New()
 	e.Logger.SetLevel(log.DEBUG)
 	e.GET("/static/style.css", StaticHandler(css_style, "text/css", e))
+	e.GET("/static/codejar.js", StaticHandler(js_codejar, "text/javascript", e))
 	e.GET("/list", ListHandler(e))
 	e.GET("/create", CreateHandler(e))
 	e.POST("/create", CreateHandler(e))
