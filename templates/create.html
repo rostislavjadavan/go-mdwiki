@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {{.Head}}
+    <title>Create new page - mdwiki</title>
+</head>
+
+<body>
+    <div class="markdown-body">
+        <a href="/">Home</a> | <a href="/list">List of all pages</a>
+        <hr />
+        <h1>Create new page</h1>
+        <form action="/create" method="POST">
+            <label for="name">Filename (with or without extension):</label><br>
+            <i style="color:red"></b>{{.Data.Validation}}</i><br />
+            <input type="text" name="name" value="{{.Data.Name}}" />
+            <input type="submit" value="Create" />
+        </form>
+        {{.Footer}}
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {{.Head}}
+    <title>{{.Data.Filename}} - mdwiki</title>
+</head>
+
+<body>
+    <div class="markdown-body">
+        <a href="/">Home</a> | <a href="/edit/{{.Data.Filename}}">Edit</a> | <a
+            href="/delete/{{.Data.Filename}}">Delete</a> | <a href="/create">Create new</a> | <a href="/list">List of
+            all pages</a>
+        <hr />
+        {{.Data.Content}}
+
+        {{.Footer}}
+    </div>
+</body>
+
+</html>
