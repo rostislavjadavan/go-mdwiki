@@ -39,6 +39,9 @@ var CssStyle string
 //go:embed assets/codejar.js
 var JavascriptCodeJar string
 
+//go:embed assets/favicon.png
+var ImageFaviconPng string
+
 type templateData struct {
 	Data   interface{}
 	Head   string
