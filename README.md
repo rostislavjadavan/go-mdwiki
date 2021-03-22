@@ -1,6 +1,6 @@
 ![](logo/mdwiki_logo.png)
 
-# go-mdwiki
+# mdwiki
 
 ## Basic Golang Markdown Wiki
 

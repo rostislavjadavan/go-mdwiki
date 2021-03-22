@@ -1,8 +1,8 @@
 package storage
 
 import (
-	"github.com/rostislavjadavan/go-mdwiki/src/config"
-	"github.com/rostislavjadavan/go-mdwiki/src/ui"
+	"github.com/rostislavjadavan/mdwiki/src/config"
+	"github.com/rostislavjadavan/mdwiki/src/ui"
 	"io/ioutil"
 	"os"
 	"path"
