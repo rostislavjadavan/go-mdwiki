@@ -1,4 +1,4 @@
-package main
+package ui
 
 import (
 	"bytes"
@@ -7,54 +7,54 @@ import (
 )
 
 //go:embed templates/page.html
-var tpl_page string
+var TemplatePage string
 
 //go:embed templates/list.html
-var tpl_list string
+var TemplateList string
 
 //go:embed templates/create.html
-var tpl_create string
+var TemplateCreate string
 
 //go:embed templates/edit.html
-var tpl_edit string
+var TemplateEdit string
 
 //go:embed templates/delete.html
-var tpl_delete string
+var TemplateDelete string
 
 //go:embed templates/error.html
-var tpl_error string
+var TemplateError string
 
 //go:embed templates/not_found.html
-var tpl_not_found string
+var TemplateNotFound string
 
 //go:embed templates/head.html
-var tpl_head string
+var TemplateHtmlHead string
 
 //go:embed templates/footer.html
-var tpl_footer string
+var TemplateFooter string
 
-//go:embed templates/style.css
-var css_style string
+//go:embed assets/style.css
+var CssStyle string
 
-//go:embed templates/codejar.js
-var js_codejar string
+//go:embed assets/codejar.js
+var JavascriptCodeJar string
 
-type TemplateData struct {
+type templateData struct {
 	Data   interface{}
 	Head   string
 	Footer string
 }
 
 func Render(content string, data interface{}) (string, error) {
-	head, err := renderTemplate(tpl_head, nil)
+	head, err := renderTemplate(TemplateHtmlHead, nil)
 	if err != nil {
 		return "", err
 	}
-	footer, err := renderTemplate(tpl_footer, nil)
+	footer, err := renderTemplate(TemplateFooter, nil)
 	if err != nil {
 		return "", err
 	}
-	tpl, err := renderTemplate(content, TemplateData{
+	tpl, err := renderTemplate(content, templateData{
 		Head:   head,
 		Data:   data,
 		Footer: footer,
