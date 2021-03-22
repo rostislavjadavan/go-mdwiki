@@ -4,11 +4,13 @@ import (
 	"github.com/gomarkdown/markdown"
 	"github.com/gomarkdown/markdown/html"
 	"io/fs"
+	"os"
 	"regexp"
 	"strings"
 )
 
-var defaultFilePermission fs.FileMode = 0644
+var defaultFilePermission fs.FileMode = 0755
+var defaultDirectoryPermission fs.FileMode = 0755
 
 var renderer markdown.Renderer
 var filenameValidationRegexp *regexp.Regexp
@@ -39,4 +41,15 @@ func UriToPage(uri string) string {
 
 func ValidateFilename(filename string) bool {
 	return filenameValidationRegexp.MatchString(filename)
+}
+
+func fsExists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
 }

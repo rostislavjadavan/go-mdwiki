@@ -13,8 +13,7 @@ func PageHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) error {
 
 		page, err := s.LoadPage(storage.UriToPage(c.Param("page")))
 		if err != nil {
-			e.Logger.Warn(err)
-			return c.HTML(http.StatusNotFound, ui.TemplateNotFound)
+			return notFoundPage(err, e, c)
 		}
 
 		tpl, err := ui.Render(ui.TemplatePage, page)
@@ -87,8 +86,7 @@ func EditHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) error {
 
 		page, err := s.LoadPage(storage.UriToPage(c.Param("page")))
 		if err != nil {
-			e.Logger.Warn(err)
-			return c.HTML(http.StatusNotFound, ui.TemplateNotFound)
+			return notFoundPage(err, e, c)
 		}
 
 		if c.Request().Method == "POST" {
@@ -116,8 +114,7 @@ func DeleteHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) error 
 
 		page, err := s.LoadPage(storage.UriToPage(c.Param("page")))
 		if err != nil {
-			e.Logger.Warn(err)
-			return c.HTML(http.StatusNotFound, ui.TemplateNotFound)
+			return notFoundPage(err, e, c)
 		}
 
 		tpl, err := ui.Render(ui.TemplateDelete, page)
@@ -133,8 +130,7 @@ func DoDeleteHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) erro
 	return func(c echo.Context) error {
 		page, err := s.LoadPage(storage.UriToPage(c.Param("page")))
 		if err != nil {
-			e.Logger.Warn(err)
-			return c.HTML(http.StatusNotFound, ui.TemplateNotFound)
+			return notFoundPage(err, e, c)
 		}
 		err = s.DeletePage(page)
 		if err != nil {

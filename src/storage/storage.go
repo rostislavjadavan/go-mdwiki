@@ -22,7 +22,10 @@ type Page struct {
 }
 
 func CreateStorage(config *config.AppConfig) (*Storage, error) {
-	return &Storage{config: config}, nil
+	s := &Storage{config: config}
+	initStorage(s)
+
+	return s, nil
 }
 
 func (s *Storage) CreateNewPage(filename string) (*Page, error) {
