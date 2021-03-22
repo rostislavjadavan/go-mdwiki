@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/rostislavjadavan/go-mdwiki/src/storage"
-	"github.com/rostislavjadavan/go-mdwiki/src/ui"
+	"github.com/rostislavjadavan/mdwiki/src/storage"
+	"github.com/rostislavjadavan/mdwiki/src/ui"
 	"net/http"
 )
 

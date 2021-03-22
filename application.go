@@ -3,10 +3,10 @@ package main
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
-	"github.com/rostislavjadavan/go-mdwiki/src/config"
-	"github.com/rostislavjadavan/go-mdwiki/src/handlers"
-	"github.com/rostislavjadavan/go-mdwiki/src/storage"
-	"github.com/rostislavjadavan/go-mdwiki/src/ui"
+	"github.com/rostislavjadavan/mdwiki/src/config"
+	"github.com/rostislavjadavan/mdwiki/src/handlers"
+	"github.com/rostislavjadavan/mdwiki/src/storage"
+	"github.com/rostislavjadavan/mdwiki/src/ui"
 )
 
 func main() {

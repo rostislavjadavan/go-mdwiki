@@ -1,4 +1,4 @@
-module github.com/rostislavjadavan/go-mdwiki
+module github.com/rostislavjadavan/mdwiki
 
 go 1.16
 
