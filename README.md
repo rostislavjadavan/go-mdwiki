@@ -10,7 +10,8 @@
 - pages are stored as plain markdown files
 - codejar for editing markdown (https://github.com/antonmedv/codejar) with tab support
 - github theme (thanks to https://github.com/sindresorhus/github-markdown-css)
-- using golang 1.16 embed
+- Echo used as underlying http framework (https://echo.labstack.com/)  
+- using golang 1.16 (because of embed feature)
 - inspired by go-bwiki
 
 ## How to run
@@ -20,6 +21,7 @@ go run .
 ```
 
 ## Configuration
+Application loads `config.yml` on start up.
 
 ```
 host: localhost
@@ -27,8 +29,8 @@ port: 8080
 storage: .storage
 ```
 
-- host & port - web server properties
-- storage is directory where pages going to be stored
+- `host` & `port` - web server configuration
+- `storage` is directory where pages going to be stored
 
 ## Screenshots
 
