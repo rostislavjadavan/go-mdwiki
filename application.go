@@ -24,6 +24,7 @@ func main() {
 	e.Logger.SetLevel(log.DEBUG)
 	e.GET("/static/style.css", handlers.StaticHandler(ui.CssStyle, handlers.MimeCss, e))
 	e.GET("/static/codejar.js", handlers.StaticHandler(ui.JavascriptCodeJar, handlers.MimeJavascript, e))
+	e.GET("/static/favicon.png", handlers.StaticHandler(ui.ImageFaviconPng, handlers.MimePng, e))
 	e.GET("/list", handlers.ListHandler(e, s))
 	e.GET("/create", handlers.CreateHandler(e, s))
 	e.POST("/create", handlers.CreateHandler(e, s))
