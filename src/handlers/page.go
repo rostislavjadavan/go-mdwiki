@@ -29,7 +29,7 @@ func PageHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) error {
 			return notFoundPage(err, e, c)
 		}
 
-		tpl, err := ui.Render(ui.TemplatePage, page)
+		tpl, err := ui.RenderCustomMenu(ui.TemplatePage, ui.TemplateMenuPage, page)
 		if err != nil {
 			return errorPage(err, e, c)
 		}

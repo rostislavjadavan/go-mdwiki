@@ -30,6 +30,12 @@ var TemplateNotFound string
 //go:embed templates/head.html
 var TemplateHtmlHead string
 
+//go:embed templates/menu.html
+var TemplateMenu string
+
+//go:embed templates/menu_page.html
+var TemplateMenuPage string
+
 //go:embed templates/footer.html
 var TemplateFooter string
 
@@ -47,11 +53,16 @@ var ImageFaviconPng string
 
 type templateData struct {
 	Data   interface{}
+	Menu   string
 	Head   string
 	Footer string
 }
 
 func Render(content string, data interface{}) (string, error) {
+	return RenderCustomMenu(content, TemplateMenu, data)
+}
+
+func RenderCustomMenu(contentTpl string, menuTpl string, data interface{}) (string, error) {
 	head, err := renderTemplate(TemplateHtmlHead, nil)
 	if err != nil {
 		return "", err
@@ -60,9 +71,14 @@ func Render(content string, data interface{}) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	tpl, err := renderTemplate(content, templateData{
+	menu, err := renderTemplate(menuTpl, data)
+	if err != nil {
+		return "", err
+	}
+	tpl, err := renderTemplate(contentTpl, templateData{
 		Head:   head,
 		Data:   data,
+		Menu:   menu,
 		Footer: footer,
 	})
 	if err != nil {

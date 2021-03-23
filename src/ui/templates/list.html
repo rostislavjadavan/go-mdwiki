@@ -6,19 +6,22 @@
     <title>List of all pages - mdwiki</title>
 </head>
 
-<body>
-    <div class="markdown-body">
-        <a href="/">Home</a> | <a href="/create">Create new</a> | <a href="/list">List of all pages</a>
-        <hr />
-        <h1>List of all pages</h1>
-        <ul>
-            {{range .Data.Pages}}
-            <li><a href="/{{.Filename}}">{{.Filename}}</a> {{.ModTime}}</li>
-            {{end}}
-        </ul>
+<body class="markdown-body">
+{{.Menu}}
+<div class="wrap container">
+    <div class="row">
+        <div class="col-xs-12">
+            <h1>List of all pages</h1>
+            <ul>
+                {{range .Data.Pages}}
+                <li><a href="/{{.Filename}}">{{.Filename}}</a> {{.ModTime}}</li>
+                {{end}}
+            </ul>
 
-        {{.Footer}}
+            {{.Footer}}
+        </div>
     </div>
+</div>
 </body>
 
 </html>

@@ -6,14 +6,17 @@
     <title>Delete page - mdwiki</title>
 </head>
 
-<body>
-    <div class="markdown-body">
-        <a href="/">Home</a> | <a href="/list">List of all pages</a>
-        <hr />
-        <h1>Delete {{.Data.Filename}}?</h1>
-        <a href="/dodelete/{{.Data.Filename}}">Yes, delete</a> | <a href="/{{.Data.Filename}}">No, cancel</a>
-        {{.Footer}}
+<body class="markdown-body">
+{{.Menu}}
+<div class="wrap container">
+    <div class="row">
+        <div class="col-xs-12">
+            <h1>Delete {{.Data.Filename}}?</h1>
+            <a href="/dodelete/{{.Data.Filename}}">Yes, delete</a> | <a href="/{{.Data.Filename}}">No, cancel</a>
+            {{.Footer}}
+        </div>
     </div>
+</div>
 </body>
 
 </html>
