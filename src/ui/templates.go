@@ -21,6 +21,9 @@ var TemplateEdit string
 //go:embed templates/delete.html
 var TemplateDelete string
 
+//go:embed templates/search.html
+var TemplateSearch string
+
 //go:embed templates/error.html
 var TemplateError string
 

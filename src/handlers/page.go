@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/labstack/echo/v4"
+	"github.com/rostislavjadavan/mdwiki/src/search"
 	"github.com/rostislavjadavan/mdwiki/src/storage"
 	"github.com/rostislavjadavan/mdwiki/src/ui"
 	"net/http"
@@ -116,5 +117,23 @@ func DoDeleteHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) erro
 			return errorPage(err, e, c)
 		}
 		return c.Redirect(http.StatusFound, "/list")
+	}
+}
+
+func SearchHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) error {
+	return func(c echo.Context) error {
+		query := c.QueryParam("query")
+
+		result, err := search.Search(query, s)
+		if err != nil {
+			return errorPage(err, e, c)
+		}
+
+		tpl, err := ui.Render(ui.TemplateSearch, result)
+		if err != nil {
+			return errorPage(err, e, c)
+		}
+
+		return c.HTML(http.StatusOK, tpl)
 	}
 }

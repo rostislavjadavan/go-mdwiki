@@ -8,8 +8,9 @@
         </div>
         <div class="col-xs-6">
             <div class="fr">
-                <form><input type="text" name="search_query">
-                    <button>Search</button>
+                <form action="/search" method="GET">
+                    <input type="text" name="query" />
+                    <button type="submit">Search</button>
                 </form>
             </div>
         </div>
