@@ -39,6 +39,9 @@ var CssStyle string
 //go:embed assets/codejar.js
 var JavascriptCodeJar string
 
+//go:embed assets/script.js
+var JavascriptScript string
+
 //go:embed assets/favicon.png
 var ImageFaviconPng string
 

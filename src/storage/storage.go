@@ -2,7 +2,6 @@ package storage
 
 import (
 	"github.com/rostislavjadavan/mdwiki/src/config"
-	"github.com/rostislavjadavan/mdwiki/src/ui"
 	"io/ioutil"
 	"os"
 	"path"
@@ -51,14 +50,6 @@ func (s *Storage) LoadPage(filename string) (*Page, error) {
 	}, nil
 }
 
-func (p *Page) Render() string {
-	out, err := ui.Render(p.Content, nil)
-	if err != nil {
-		return err.Error()
-	}
-	return out
-}
-
 func (s *Storage) DeletePage(page *Page) error {
 	return os.Remove(path.Join(s.config.Storage, "pages", page.Filename))
 }
@@ -100,7 +91,7 @@ func (s *Storage) ListPages() ([]PageInfo, error) {
 
 	list := make([]PageInfo, 0)
 	for _, file := range files {
-		if !file.IsDir() && ValidateFilename(file.Name()) {
+		if !file.IsDir() && ValidateFilename(file.Name()) == nil {
 			list = append(list, PageInfo{
 				Filename: file.Name(),
 				ModTime:  file.ModTime(),
@@ -113,4 +104,12 @@ func (s *Storage) ListPages() ([]PageInfo, error) {
 	})
 
 	return list, nil
+}
+
+func (s *Storage) PageExists(filename string) bool {
+	_, err := s.LoadPage(filename)
+	if err == nil {
+		return true
+	}
+	return false
 }

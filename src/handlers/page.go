@@ -11,7 +11,12 @@ func PageHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		e.Logger.Debug("page /" + c.Param("page") + " requested")
 
-		page, err := s.LoadPage(storage.UriToPage(c.Param("page")))
+		pageUri := c.Param("page")
+		if pageUri != storage.FixPageExtension(pageUri) {
+			return c.Redirect(http.StatusPermanentRedirect, "/"+storage.FixPageExtension(pageUri))
+		}
+
+		page, err := s.LoadPage(pageUri)
 		if err != nil {
 			return notFoundPage(err, e, c)
 		}
@@ -47,31 +52,7 @@ func ListHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) error {
 
 func CreateHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) error {
 	return func(c echo.Context) error {
-		if c.Request().Method == "POST" {
-			name := c.FormValue("name")
-			if !storage.ValidateFilename(name) {
-				tpl, err := ui.Render(ui.TemplateCreate, map[string]interface{}{
-					"Name":       name,
-					"Validation": InvalidFilenameValidation,
-				})
-				if err != nil {
-					return errorPage(err, e, c)
-				}
-				return c.HTML(http.StatusOK, tpl)
-			}
-
-			e.Logger.Debug("creating new page " + name)
-			page, err := s.CreateNewPage(name)
-			if err != nil {
-				return errorPage(err, e, c)
-			}
-			return c.Redirect(http.StatusFound, "edit/"+page.Filename)
-		}
-
-		tpl, err := ui.Render(ui.TemplateCreate, map[string]interface{}{
-			"Name":       "",
-			"Validation": "",
-		})
+		tpl, err := ui.Render(ui.TemplateCreate, nil)
 		if err != nil {
 			return errorPage(err, e, c)
 		}
@@ -84,19 +65,9 @@ func EditHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		e.Logger.Debug("edit /" + c.Param("page"))
 
-		page, err := s.LoadPage(storage.UriToPage(c.Param("page")))
+		page, err := s.LoadPage(storage.FixPageExtension(c.Param("page")))
 		if err != nil {
 			return notFoundPage(err, e, c)
-		}
-
-		if c.Request().Method == "POST" {
-			c.Logger().Debug("content update of page " + page.Filename)
-			content := c.FormValue("content")
-			err := s.UpdatePageContent(content, page)
-			if err != nil {
-				return errorPage(err, e, c)
-			}
-			return c.Redirect(http.StatusFound, "/"+page.Filename)
 		}
 
 		tpl, err := ui.Render(ui.TemplateEdit, page)
@@ -112,7 +83,7 @@ func DeleteHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) error 
 	return func(c echo.Context) error {
 		e.Logger.Debug("delete /" + c.Param("page"))
 
-		page, err := s.LoadPage(storage.UriToPage(c.Param("page")))
+		page, err := s.LoadPage(storage.FixPageExtension(c.Param("page")))
 		if err != nil {
 			return notFoundPage(err, e, c)
 		}
@@ -128,7 +99,7 @@ func DeleteHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) error 
 
 func DoDeleteHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) error {
 	return func(c echo.Context) error {
-		page, err := s.LoadPage(storage.UriToPage(c.Param("page")))
+		page, err := s.LoadPage(storage.FixPageExtension(c.Param("page")))
 		if err != nil {
 			return notFoundPage(err, e, c)
 		}

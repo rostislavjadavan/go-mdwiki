@@ -11,12 +11,30 @@
         <a href="/">Home</a> | <a href="/list">List of all pages</a>
         <hr />
         <h1>Create new page</h1>
-        <form action="/create" method="POST">
-            <label for="name">Filename (with or without extension):</label><br>
-            <i style="color:red"></b>{{.Data.Validation}}</i><br />
-            <input type="text" name="name" value="{{.Data.Name}}" />
-            <input type="submit" value="Create" />
+        <form>
+            <div id="validation" class="hidden warning-box"></div>
+            <label for="filename">Filename (with or without extension):</label><br>
+            <input id="filename" type="text" name="filename" />
+            <button id="save" type="submit">Create</button>
         </form>
+        <script type="text/javascript">
+            ui.dom.onLoad(function () {
+                ui.dom.onClick("#save", function (e) {
+                    e.preventDefault();
+                    ui.api.post("/api/page.create", {
+                        filename: ui.dom.el("#filename").value,
+                    })
+                        .then(data => {
+                            ui.dom.hide("#validation")
+                            window.location.replace(data.redirect)
+                        })
+                        .catch(error => {
+                            ui.dom.content("#validation", `⚠️${error}`)
+                            ui.dom.show("#validation")
+                        });
+                })
+            });
+        </script>
         {{.Footer}}
     </div>
 </body>
