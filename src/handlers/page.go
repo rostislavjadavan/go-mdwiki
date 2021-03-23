@@ -7,11 +7,19 @@ import (
 	"net/http"
 )
 
+var HomePage string = "home.md"
+
 func PageHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		e.Logger.Debug("page /" + c.Param("page") + " requested")
 
 		pageUri := c.Param("page")
+		if pageUri == HomePage {
+			return c.Redirect(http.StatusPermanentRedirect, "/")
+		}
+		if pageUri == "" {
+			pageUri = HomePage
+		}
 		if pageUri != storage.FixPageExtension(pageUri) {
 			return c.Redirect(http.StatusPermanentRedirect, "/"+storage.FixPageExtension(pageUri))
 		}
