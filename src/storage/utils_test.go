@@ -7,17 +7,23 @@ import (
 )
 
 func TestValidateFilename(t *testing.T) {
-	assert.True(t, ValidateFilename("test.md"))
-	assert.True(t, ValidateFilename("test"))
-	assert.True(t, ValidateFilename("test.jpg"))
-	assert.True(t, ValidateFilename("test.A"))
-	assert.True(t, ValidateFilename("test.aa.AA.aa"))
-	assert.True(t, ValidateFilename("test_aa"))
-	assert.True(t, ValidateFilename("test-TEST"))
+	assert.Nil(t, ValidateFilename("test.md"))
+	assert.Nil(t, ValidateFilename("test"))
+	assert.Nil(t, ValidateFilename("test.jpg"))
+	assert.Nil(t, ValidateFilename("test.A"))
+	assert.Nil(t, ValidateFilename("test.aa.AA.aa"))
+	assert.Nil(t, ValidateFilename("test_aa"))
+	assert.Nil(t, ValidateFilename("test-TEST"))
 
-	assert.False(t, ValidateFilename("t est.md"))
-	assert.False(t, ValidateFilename("test .md"))
-	assert.False(t, ValidateFilename("t?est.md"))
-	assert.False(t, ValidateFilename("test!"))
-	assert.False(t, ValidateFilename("test%^"))
+	assert.NotNil(t, ValidateFilename("t est.md"))
+	assert.NotNil(t, ValidateFilename("test .md"))
+	assert.NotNil(t, ValidateFilename("t?est.md"))
+	assert.NotNil(t, ValidateFilename("test!"))
+	assert.NotNil(t, ValidateFilename("test%^"))
+}
+
+func TestFixPageExtension(t *testing.T) {
+	assert.Equal(t, "", FixPageExtension(""))
+	assert.Equal(t, "test.md", FixPageExtension("test"))
+	assert.Equal(t, "test.md", FixPageExtension("test.md"))
 }

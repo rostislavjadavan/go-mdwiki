@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"errors"
 	"github.com/gomarkdown/markdown"
 	"github.com/gomarkdown/markdown/html"
 	"io/fs"
@@ -13,7 +14,12 @@ var defaultFilePermission fs.FileMode = 0755
 var defaultDirectoryPermission fs.FileMode = 0755
 
 var renderer markdown.Renderer
+
 var filenameValidationRegexp *regexp.Regexp
+
+var FilenameEmptyValidation string = "Filename cannot be empty"
+var InvalidFilenameValidation string = "Invalid filename, valid examples: wiki_page_1.md, flowers-and-animals.md, page106.md"
+var SamePageExistsValidation string = "Page with same name already exists"
 
 func init() {
 	htmlFlags := html.CommonFlags
@@ -28,19 +34,22 @@ func ToMarkdown(content []byte) string {
 	return string(markdown.ToHTML([]byte(contentString), nil, renderer))
 }
 
-func UriToPage(uri string) string {
+func FixPageExtension(uri string) string {
 	page := strings.TrimSpace(uri)
-	if page == "" {
-		page = "home"
-	}
-	if !strings.HasSuffix(page, ".md") {
+	if page != "" && !strings.HasSuffix(page, ".md") {
 		page = page + ".md"
 	}
 	return page
 }
 
-func ValidateFilename(filename string) bool {
-	return filenameValidationRegexp.MatchString(filename)
+func ValidateFilename(filename string) error {
+	if strings.TrimSpace(filename) == "" {
+		return errors.New(FilenameEmptyValidation)
+	}
+	if !filenameValidationRegexp.MatchString(filename) {
+		return errors.New(InvalidFilenameValidation)
+	}
+	return nil
 }
 
 func fsExists(path string) (bool, error) {

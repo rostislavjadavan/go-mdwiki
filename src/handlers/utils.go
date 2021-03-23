@@ -6,8 +6,6 @@ import (
 	"net/http"
 )
 
-var InvalidFilenameValidation string = "Invalid filename, valid examples: wiki_page_1.md, flowers-and-animals.md, page106.md"
-
 func errorPage(err error, e *echo.Echo, c echo.Context) error {
 	e.Logger.Error(err)
 	tpl, err := ui.Render(ui.TemplateError, map[string]interface{}{

@@ -7,30 +7,45 @@
 </head>
 
 <body>
-    <div class="markdown-body">
-        <a href="/">Home</a> | <a href="/list">List of all pages</a>
-        <hr />
-        <h1>Edit {{.Data.Filename}}</h1>
-        <form action="/edit/{{.Data.Filename}}" method="POST">
-            <div class="editor">{{.Data.RawContent}}</div>
-            <input id="content" type="hidden" name="content" />
-            <input id="save" type="submit" value="Save" /> <a href="/{{.Data.Filename}}">Cancel</a>
-        </form>
-        <script type="module">
-            import { CodeJar } from '/static/codejar.js'
-            window.addEventListener('DOMContentLoaded', (event) => {                
-                const highlight = (editor) => {
-                    const code = editor.textContent
-                    editor.innerHTML = code
-                }
-                let jar = CodeJar(document.querySelector('.editor'), highlight)
-                let submit = document.getElementById("save").addEventListener("click", function (e) {
-                    document.getElementById("content").value = document.querySelector('.editor').innerText;
-                });
-            });
-        </script>
-        {{.Footer}}
-    </div>
+<div class="markdown-body">
+    <a href="/">Home</a> | <a href="/list">List of all pages</a>
+    <hr/>
+    <h1>Edit {{.Data.Filename}}</h1>
+    <form>
+        <div id="validation" class="hidden warning-box"></div>
+        <div class="editor">{{.Data.RawContent}}</div>
+        <input id="filename" type="text" name="filename" value="{{.Data.Filename}}"/><br/>
+        <br/>
+        <button id="save" type="submit">Save</button>
+        <a href="/{{.Data.Filename}}">Cancel</a>
+    </form>
+    <script type="module">
+        import {CodeJar} from '/static/codejar.js'
+
+        ui.dom.onLoad(function () {
+            const jar = CodeJar(ui.dom.el('.editor'), (editor) => {
+                const code = editor.textContent
+                editor.innerHTML = code
+            })
+            ui.dom.onClick("#save", function (e) {
+                e.preventDefault();
+                ui.api.post("/api/page.update/{{.Data.Filename}}", {
+                    filename: ui.dom.el("#filename").value,
+                    content: jar.toString()
+                })
+                    .then(data => {
+                        ui.dom.hide("#validation")
+                        window.location.replace(data.redirect)
+                    })
+                    .catch(error => {
+                        ui.dom.content("#validation", `⚠️${error}`)
+                        ui.dom.show("#validation")
+                    });
+            })
+        });
+    </script>
+    {{.Footer}}
+</div>
 </body>
 
 </html>
