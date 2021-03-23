@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {{.Head}}
+    <title>List of all pages - mdwiki</title>
+</head>
+
+<body class="markdown-body">
+{{.Menu}}
+<div class="wrap container">
+    <div class="row">
+        <div class="col-xs-12">
+            <h1>Search</h1>
+            <form action="/search" method="GET">
+                <input type="text" name="query" value="{{.Data.Query}}" />
+                <button type="submit">Search</button>
+            </form>
+            <ul>
+                {{range .Data.Pages}}
+                <li>
+                    <a href="/{{.Filename}}">{{.Filename}}</a> {{.ModTime}} <small>score: {{.Score}}</small> <br/>
+                    <code>{{.Preview}}</code>
+                </li>
+                {{end}}
+            </ul>
+            {{.Footer}}
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

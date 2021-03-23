@@ -35,6 +35,7 @@ func main() {
 	e.POST("/api/page.update/:page", api.UpdatePageHandler(e, s))
 
 	// UI
+	e.GET("/search", handlers.SearchHandler(e, s))
 	e.GET("/list", handlers.ListHandler(e, s))
 	e.GET("/create", handlers.CreateHandler(e, s))
 	e.GET("/edit/:page", handlers.EditHandler(e, s))

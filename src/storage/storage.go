@@ -50,6 +50,14 @@ func (s *Storage) LoadPage(filename string) (*Page, error) {
 	}, nil
 }
 
+func (s *Storage) LoadRawPageContent(filename string) (string, error) {
+	content, err := ioutil.ReadFile(path.Join(s.config.Storage, "pages", filename))
+	if err != nil {
+		return "", err
+	}
+	return string(content[:]), nil
+}
+
 func (s *Storage) DeletePage(page *Page) error {
 	return os.Remove(path.Join(s.config.Storage, "pages", page.Filename))
 }
