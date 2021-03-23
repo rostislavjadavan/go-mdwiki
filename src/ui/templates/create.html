@@ -20,6 +20,7 @@
             </form>
             <script type="text/javascript">
                 ui.dom.onLoad(function () {
+                    ui.dom.el("#filename").focus()
                     ui.dom.onClick("#save", function (e) {
                         e.preventDefault();
                         ui.api.post("/api/page.create", {
