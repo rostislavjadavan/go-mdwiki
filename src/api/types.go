@@ -8,7 +8,7 @@ type RedirectResponse struct {
 	Redirect string `json:"redirect"`
 }
 
-type CreatePageRequest struct {
+type FilenameRequest struct {
 	Filename string `json:"filename"`
 }
 

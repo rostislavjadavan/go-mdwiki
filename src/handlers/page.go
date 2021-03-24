@@ -25,7 +25,7 @@ func PageHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) error {
 			return c.Redirect(http.StatusPermanentRedirect, "/"+storage.FixPageExtension(pageUri))
 		}
 
-		page, err := s.LoadPage(pageUri)
+		page, err := s.Page(pageUri)
 		if err != nil {
 			return notFoundPage(err, e, c)
 		}
@@ -43,7 +43,7 @@ func ListHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		e.Logger.Debug("page list")
 
-		list, err := s.ListPages()
+		list, err := s.PageList()
 		if err != nil {
 			return errorPage(err, e, c)
 		}
@@ -74,7 +74,7 @@ func EditHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		e.Logger.Debug("edit /" + c.Param("page"))
 
-		page, err := s.LoadPage(storage.FixPageExtension(c.Param("page")))
+		page, err := s.Page(storage.FixPageExtension(c.Param("page")))
 		if err != nil {
 			return notFoundPage(err, e, c)
 		}
@@ -85,38 +85,6 @@ func EditHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) error {
 		}
 
 		return c.HTML(http.StatusOK, tpl)
-	}
-}
-
-func DeleteHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) error {
-	return func(c echo.Context) error {
-		e.Logger.Debug("delete /" + c.Param("page"))
-
-		page, err := s.LoadPage(storage.FixPageExtension(c.Param("page")))
-		if err != nil {
-			return notFoundPage(err, e, c)
-		}
-
-		tpl, err := ui.Render(ui.TemplateDelete, page)
-		if err != nil {
-			return errorPage(err, e, c)
-		}
-
-		return c.HTML(http.StatusOK, tpl)
-	}
-}
-
-func DoDeleteHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) error {
-	return func(c echo.Context) error {
-		page, err := s.LoadPage(storage.FixPageExtension(c.Param("page")))
-		if err != nil {
-			return notFoundPage(err, e, c)
-		}
-		err = s.DeletePage(page)
-		if err != nil {
-			return errorPage(err, e, c)
-		}
-		return c.Redirect(http.StatusFound, "/list")
 	}
 }
 

@@ -6,9 +6,9 @@ import (
 	"net/http"
 )
 
-func CreatePageHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) error {
+func PageCreateHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) error {
 	return func(c echo.Context) error {
-		req := new(CreatePageRequest)
+		req := new(FilenameRequest)
 		err := c.Bind(req)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, ErrorResponse{Message: err.Error()})
@@ -29,7 +29,7 @@ func CreatePageHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) er
 		// Filename validation end
 
 		e.Logger.Debug("creating new page " + req.Filename)
-		page, err := s.CreateNewPage(req.Filename)
+		page, err := s.PageCreate(req.Filename)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, ErrorResponse{Message: err.Error()})
 		}
@@ -38,7 +38,7 @@ func CreatePageHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) er
 	}
 }
 
-func UpdatePageHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) error {
+func PageUpdateHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		e.Logger.Debugf("api update '%s'", c.Param("page"))
 
@@ -60,25 +60,44 @@ func UpdatePageHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) er
 		}
 		// Filename validation end
 
-		page, err := s.LoadPage(c.Param("page"))
+		page, err := s.Page(c.Param("page"))
 		if err != nil {
 			return c.JSON(http.StatusNotFound, ErrorResponse{Message: err.Error()})
 		}
 
-		if req.Content != page.Content {
-			err = s.UpdatePageContent(req.Content, page)
-			if err != nil {
-				return c.JSON(http.StatusInternalServerError, ErrorResponse{Message: err.Error()})
-			}
+		err = s.PageContentUpdate(req.Content, page)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, ErrorResponse{Message: err.Error()})
 		}
 
-		if req.Filename != page.Filename {
-			err = s.RenamePage(req.Filename, page)
-			if err != nil {
-				return c.JSON(http.StatusInternalServerError, ErrorResponse{Message: err.Error()})
-			}
+		err = s.PageRename(req.Filename, page)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, ErrorResponse{Message: err.Error()})
 		}
 
 		return c.JSON(http.StatusOK, RedirectResponse{Redirect: "/" + page.Filename})
+	}
+}
+
+func PageDeleteHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) error {
+	return func(c echo.Context) error {
+		req := new(FilenameRequest)
+		err := c.Bind(req)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, ErrorResponse{Message: err.Error()})
+		}
+		req.Filename = storage.FixPageExtension(req.Filename)
+
+		e.Logger.Debugf("api delete '%s'", req.Filename)
+
+		page, err := s.Page(storage.FixPageExtension(req.Filename))
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, ErrorResponse{Message: err.Error()})
+		}
+		err = s.PageDelete(page)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, ErrorResponse{Message: err.Error()})
+		}
+		return c.JSON(http.StatusOK, RedirectResponse{Redirect: "/list"})
 	}
 }

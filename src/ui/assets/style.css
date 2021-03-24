@@ -36,6 +36,20 @@ button, .button, a.button {
     background-color: #fff9e7;
 }
 
+.modal {
+    display: none;
+    height: 365px;
+    width: 650px;
+    z-index: 1011;
+    position: absolute;
+    left: 50%;
+    top: 25%;
+    transform: translate(-50%, -25%);
+    padding: 25px;
+    background-color: #fff;
+    border: .25em solid #e1e4e8;
+}
+
 .hidden, .markdown-body .hidden { display: none }
 .fr, .markdown-body .fr { float: right }
 .mb-1, .markdown-body .mb-1 { margin-bottom: 25px }
@@ -44,6 +58,11 @@ button, .button, a.button {
 .markdown-body .trash-wrap {
     padding: 15px;
     background-color: #dadada;
+}
+
+.markdown-body .version-wrap {
+    padding: 15px;
+    background-color: #fff9e7;
 }
 
 /* codejar styles: https://github.com/antonmedv/codejar */
