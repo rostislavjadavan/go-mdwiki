@@ -1,22 +1,24 @@
 package search
 
 import (
-	"github.com/rostislavjadavan/mdwiki/src/search/fuzzy"
 	"github.com/rostislavjadavan/mdwiki/src/storage"
-	stripmd "github.com/writeas/go-strip-markdown"
+	"github.com/writeas/go-strip-markdown"
+	"golang.org/x/text/runes"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/unicode/norm"
 	"sort"
 	"strings"
 	"time"
+	"unicode"
 )
 
-var charsAroundSearchMatch int = 50
-
 type Result struct {
-	Query string
-	Pages []pageSearchResult
+	Query       string
+	Filenames   []searchResult
+	PageContent []searchResult
 }
 
-type pageSearchResult struct {
+type searchResult struct {
 	Filename string
 	ModTime  time.Time
 	Score    int
@@ -24,78 +26,110 @@ type pageSearchResult struct {
 }
 
 func Search(query string, s *storage.Storage) (*Result, error) {
+	result := Result{
+		Query:       query,
+		Filenames:   make([]searchResult, 0),
+		PageContent: make([]searchResult, 0),
+	}
+
 	pages, err := s.ListPages()
 	if err != nil {
-		return nil, err
+		return &result, err
 	}
 
 	query = strings.TrimSpace(query)
-	result := Result{
-		Query: query,
-		Pages: make([]pageSearchResult, 0),
-	}
-
 	if query == "" {
 		return &result, nil
 	}
 
+	queries := extractQueries(query)
+	if len(queries) == 0 {
+		return &result, nil
+	}
+
 	for _, page := range pages {
-		content, _ := s.LoadRawPageContent(page.Filename)
-		found, score, preview := searchInMdContent(query, content)
+		// Search in filename
+		found, score, preview := searchInLine(page.Filename, queries)
 		if found {
-			result.Pages = append(result.Pages, pageSearchResult{
+			result.Filenames = append(result.Filenames, searchResult{
 				Filename: page.Filename,
 				ModTime:  page.ModTime,
 				Score:    score,
 				Preview:  preview,
 			})
 		}
+
+		// Search in content
+		markdownContent, _ := s.LoadRawPageContent(page.Filename)
+		content := stripmd.Strip(markdownContent)
+		lines := strings.Split(content, "\n")
+
+		r := searchResult{
+			Filename: page.Filename,
+			ModTime:  page.ModTime,
+			Score:    0,
+			Preview:  "",
+		}
+
+		for _, line := range lines {
+			found, score, preview := searchInLine(line, queries)
+			if found {
+				r.Score += score
+				r.Preview += "\n" + preview
+			}
+		}
+
+		if r.Score > 0 {
+			result.PageContent = append(result.PageContent, r)
+		}
 	}
 
-	sort.Slice(result.Pages, func(i, j int) bool {
-		return result.Pages[i].Score > result.Pages[j].Score
+	sort.Slice(result.PageContent, func(i, j int) bool {
+		return result.PageContent[i].Score > result.PageContent[j].Score
+	})
+
+	sort.Slice(result.Filenames, func(i, j int) bool {
+		return result.Filenames[i].Score > result.Filenames[j].Score
 	})
 
 	return &result, nil
 }
 
-func searchInMdContent(query string, markdownContent string) (bool, int, string) {
-	content := stripmd.Strip(markdownContent)
-	words := strings.Fields(content)
-	matches := fuzzy.Find(query, words)
-	if len(matches) > 0 {
-		score := 0
-		preview := ""
-		for _, match := range matches {
-			score += match.Score
-			preview += highlightMatchedContent(match, content)
-		}
-		if score > 0 {
-			return true, score, preview
+func searchInLine(line string, queries []string) (bool, int, string) {
+	score := 0
+	preview := line
+	words := strings.Fields(line)
+	t := transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC)
+
+	for _, query := range queries {
+		for _, word := range words {
+			tq, _, _ := transform.String(t, strings.ToLower(query))
+			tw, _, _ := transform.String(t, strings.ToLower(word))
+
+			index := strings.Index(tw, tq)
+			if index != -1 {
+				score += 1
+				preview = highlight(preview, word, index, query)
+			}
 		}
 	}
-	return false, 0, ""
+
+	if score > 0 {
+		return true, score, preview
+	}
+	return false, score, ""
 }
 
-func highlightMatchedContent(match fuzzy.Match, content string) string {
-	if match.Score <= 0 {
-		return ""
+func extractQueries(query string) []string {
+	out := make([]string, 0)
+	for _, q := range strings.Fields(query) {
+		out = append(out, strings.TrimSpace(q))
 	}
+	return out
+}
 
-	index := strings.Index(content, match.Str)
-	if index == 1 {
-		return ""
-	}
-
-	indexStart := index - charsAroundSearchMatch
-	if indexStart < 0 {
-		indexStart = 0
-	}
-	indexEnd := index + charsAroundSearchMatch
-	if indexEnd > len(content)-1 {
-		indexEnd = len(content) - 1
-	}
-	content = content[indexStart:indexEnd]
-	content = strings.Replace(content, match.Str, "<b class=\"highlight\">"+match.Str+"</b>", 1)
-	return content + "\n"
+// highlight 'word' in 'src' starting from 'index' to length of the 'query'
+func highlight(src string, word string, index int, query string) string {
+	r := word[:index] + "<b class=\"highlight\">" + word[index:index+len(query)] + "</b>" + word[index+len(query):]
+	return strings.Replace(src, word, r, 1)
 }

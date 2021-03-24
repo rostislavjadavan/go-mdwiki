@@ -9,4 +9,5 @@ require (
 	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/stretchr/testify v1.7.0 // indirect
 	github.com/writeas/go-strip-markdown v2.0.1+incompatible // indirect
+	golang.org/x/text v0.3.5 // indirect
 )

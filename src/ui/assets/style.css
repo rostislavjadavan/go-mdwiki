@@ -29,9 +29,7 @@ button, .button, a.button {
     vertical-align: middle;
 }
 
-.hidden {
-    display: none
-}
+
 
 .warning-box {
     padding: 8px 11px;
@@ -40,9 +38,10 @@ button, .button, a.button {
     background-color: #fff9e7;
 }
 
-.fr {
-    float: right;
-}
+.hidden, .markdown-body .hidden { display: none }
+.fr, .markdown-body .fr { float: right }
+.mb-1, .markdown-body .mb-1 { margin-bottom: 25px }
+.highlight, .markdown-body .highlight { background-color: #ffd62b }
 
 /* codejar styles: https://github.com/antonmedv/codejar */
 .editor {
