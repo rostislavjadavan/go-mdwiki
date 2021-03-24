@@ -50,6 +50,18 @@ func (s *Storage) LoadPage(filename string) (*Page, error) {
 	}, nil
 }
 
+func (s *Storage) LoadTrashPage(filename string) (*Page, error) {
+	content, err := ioutil.ReadFile(path.Join(s.config.Storage, "trash", filename))
+	if err != nil {
+		return nil, err
+	}
+	return &Page{
+		Filename:   filename,
+		Content:    ToMarkdown(content),
+		RawContent: string(content[:]),
+	}, nil
+}
+
 func (s *Storage) LoadRawPageContent(filename string) (string, error) {
 	content, err := ioutil.ReadFile(path.Join(s.config.Storage, "pages", filename))
 	if err != nil {
@@ -59,7 +71,11 @@ func (s *Storage) LoadRawPageContent(filename string) (string, error) {
 }
 
 func (s *Storage) DeletePage(page *Page) error {
-	return os.Remove(path.Join(s.config.Storage, "pages", page.Filename))
+	return os.Rename(path.Join(s.config.Storage, "pages", page.Filename), path.Join(s.config.Storage, "trash", page.Filename))
+}
+
+func (s *Storage) RestorePage(page *Page) error {
+	return os.Rename(path.Join(s.config.Storage, "trash", page.Filename), path.Join(s.config.Storage, "pages", page.Filename))
 }
 
 func (s *Storage) UpdatePageContent(content string, page *Page) error {
@@ -112,6 +128,49 @@ func (s *Storage) ListPages() ([]PageInfo, error) {
 	})
 
 	return list, nil
+}
+
+func (s *Storage) ListTrash() ([]PageInfo, error) {
+	dir, err := os.Open(path.Join(s.config.Storage, "trash"))
+	if err != nil {
+		return nil, err
+	}
+
+	files, err := dir.Readdir(0)
+	if err != nil {
+		return nil, err
+	}
+
+	list := make([]PageInfo, 0)
+	for _, file := range files {
+		if !file.IsDir() && ValidateFilename(file.Name()) == nil {
+			list = append(list, PageInfo{
+				Filename: file.Name(),
+				ModTime:  file.ModTime(),
+			})
+		}
+	}
+
+	sort.Slice(list, func(i, j int) bool {
+		return list[i].Filename < list[j].Filename
+	})
+
+	return list, nil
+}
+
+func (s *Storage) EmptyTrash() error {
+	pages, err := s.ListTrash()
+	if err != nil {
+		return err
+	}
+	for _, p := range pages {
+		err := os.Remove(path.Join(s.config.Storage, "trash", p.Filename))
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (s *Storage) PageExists(filename string) bool {

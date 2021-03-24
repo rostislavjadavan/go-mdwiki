@@ -28,7 +28,7 @@
                         })
                             .then(data => {
                                 ui.dom.hide("#validation")
-                                window.location.replace(data.redirect)
+                                ui.browser.redirect(data.redirect)
                             })
                             .catch(error => {
                                 ui.dom.content("#validation", `⚠️${error}`)
