@@ -2,6 +2,7 @@
     <div class="row">
         <div class="col-xs-6">
             <a href="/">Home</a> |
+            <a href="/restore/{{.Filename}}">Restore</a> |
             <a href="/create">Create new</a> |
             <a href="/list">List of all pages</a> |
             <a href="/trash">Trash</a>
@@ -9,7 +10,7 @@
         <div class="col-xs-6">
             <div class="fr">
                 <form action="/search" method="GET">
-                    <input type="text" name="query" />
+                    <input type="text" name="query"/>
                     <button type="submit">Search</button>
                 </form>
             </div>

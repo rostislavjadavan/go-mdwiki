@@ -2,6 +2,7 @@
 let ui = {};
 ui.api = {};
 ui.dom = {};
+ui.browser = {};
 
 ui.api = (function () {
     function handleResponse(response) {
@@ -57,5 +58,12 @@ ui.dom = (function () {
     }
 })();
 
+ui.browser = (function () {
+    return {
+        redirect: function (location) {
+            window.location.replace(location)
+        }
+    }
+})();
 
 

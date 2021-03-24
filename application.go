@@ -33,9 +33,13 @@ func main() {
 	// RPC like API
 	e.POST("/api/page.create", api.CreatePageHandler(e, s))
 	e.POST("/api/page.update/:page", api.UpdatePageHandler(e, s))
+	e.POST("/api/trash.empty", api.EmptyTrashHandler(e, s))
 
 	// UI
 	e.GET("/search", handlers.SearchHandler(e, s))
+	e.GET("/trash", handlers.TrashHandler(e, s))
+	e.GET("/trash/:page", handlers.TrashPageHandler(e, s))
+	e.GET("/restore/:page", handlers.DoRestoreHandler(e, s))
 	e.GET("/list", handlers.ListHandler(e, s))
 	e.GET("/create", handlers.CreateHandler(e, s))
 	e.GET("/edit/:page", handlers.EditHandler(e, s))

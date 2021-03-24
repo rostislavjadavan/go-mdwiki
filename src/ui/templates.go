@@ -9,8 +9,14 @@ import (
 //go:embed templates/page.html
 var TemplatePage string
 
+//go:embed templates/page_trash.html
+var TemplatePageTrash string
+
 //go:embed templates/list.html
 var TemplateList string
+
+//go:embed templates/trash.html
+var TemplateTrash string
 
 //go:embed templates/create.html
 var TemplateCreate string
@@ -38,6 +44,9 @@ var TemplateMenu string
 
 //go:embed templates/menu_page.html
 var TemplateMenuPage string
+
+//go:embed templates/menu_trash.html
+var TemplateMenuTrash string
 
 //go:embed templates/footer.html
 var TemplateFooter string
