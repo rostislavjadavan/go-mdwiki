@@ -12,29 +12,34 @@
     <div class="row">
         <div class="col-xs-12">
             <h1>Edit {{.Data.Filename}}</h1>
-            <form>
+            <form id="edit-form">
                 <div id="validation" class="hidden warning-box"></div>
-                <div id="editor" class="editor">{{.Data.RawContent}}</div>
+                <pre id="editor" class="editor" contenteditable="true">{{.Data.RawContent}}</pre>
                 <input id="filename" type="text" name="filename" value="{{.Data.Filename}}"/><br/>
                 <br/>
                 <button id="save" type="submit">Save</button>
                 <a href="/{{.Data.Filename}}">Cancel</a>
             </form>
             <script type="module">
-                import {CodeJar} from '/static/codejar.js'
-
                 ui.dom.onLoad(function () {
                     const editor = ui.dom.el('#editor')
-                    const jar = CodeJar(editor, (editor) => {
-                        const code = editor.textContent
-                        editor.innerHTML = code
-                    })
                     editor.focus()
+                    ui.dom.onKey("#editor", function (e) {
+                        if (e.keyCode == 9) {
+                            e.preventDefault()
+                            document.execCommand('insertHTML', false, '&#009');
+                        }
+                    })
+                    ui.dom.onPaste("#editor", function (e) {
+                        e.preventDefault();
+                        const text = e.clipboardData.getData("text/plain");
+                        document.execCommand("insertText", false, text);
+                    })
                     ui.dom.onClick("#save", function (e) {
                         e.preventDefault();
                         ui.api.post("/api/page.update/{{.Data.Filename}}", {
                             filename: ui.dom.el("#filename").value,
-                            content: jar.toString()
+                            content: editor.innerText
                         })
                             .then(data => {
                                 ui.dom.hide("#validation")

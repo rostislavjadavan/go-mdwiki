@@ -44,6 +44,12 @@ ui.dom = (function () {
         onClick: function (query, listener) {
             document.querySelector(query).addEventListener("click", listener)
         },
+        onKey: function (query, listener) {
+            document.querySelector(query).addEventListener("keydown", listener)
+        },
+        onPaste:  function (query, listener) {
+            document.querySelector(query).addEventListener("paste", listener)
+        },
         hide: function (query) {
             document.querySelector(query).style.display = "none"
         },

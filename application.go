@@ -26,7 +26,6 @@ func main() {
 
 	// Static files
 	e.GET("/static/style.css", handlers.StaticHandler(ui.CssStyle, handlers.MimeCss, e))
-	e.GET("/static/codejar.js", handlers.StaticHandler(ui.JavascriptCodeJar, handlers.MimeJavascript, e))
 	e.GET("/static/script.js", handlers.StaticHandler(ui.JavascriptScript, handlers.MimeJavascript, e))
 	e.GET("/static/favicon.png", handlers.StaticHandler(ui.ImageFaviconPng, handlers.MimePng, e))
 
