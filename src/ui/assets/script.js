@@ -3,6 +3,7 @@ let ui = {};
 ui.api = {};
 ui.dom = {};
 ui.browser = {};
+ui.editor = {};
 
 ui.api = (function () {
     function handleResponse(response) {
@@ -71,5 +72,32 @@ ui.browser = (function () {
         }
     }
 })();
+
+ui.editor  = function (query) {
+    ui.dom.onKey(query, function (e) {
+        if (e.keyCode == 9) {
+            e.preventDefault()
+            document.execCommand('insertHTML', false, '&#009');
+        }
+    })
+    ui.dom.onPaste(query, function (e) {
+        e.preventDefault();
+        const text = e.clipboardData.getData("text/plain");
+        document.execCommand("insertText", false, text);
+    })
+
+    const editor = ui.dom.el(query)
+    editor.contentEditable = true
+    editor.spellcheck = false
+
+    return {
+        focus: function() {
+            editor.focus()
+        },
+        getText: function() {
+            return editor.innerText
+        }
+    }
+};
 
 

@@ -14,7 +14,9 @@
             <h1>Edit {{.Data.Filename}}</h1>
             <form id="edit-form">
                 <div id="validation" class="hidden warning-box"></div>
-                <pre id="editor" class="editor" contenteditable="true">{{.Data.RawContent}}</pre>
+                <div class="editor-wrap">
+                    <pre id="editor" class="editor">{{.Data.RawContent}}</pre>
+                </div>
                 <input id="filename" type="text" name="filename" value="{{.Data.Filename}}"/><br/>
                 <br/>
                 <button id="save" type="submit">Save</button>
@@ -22,24 +24,14 @@
             </form>
             <script type="module">
                 ui.dom.onLoad(function () {
-                    const editor = ui.dom.el('#editor')
+                    const editor = ui.editor('#editor')
                     editor.focus()
-                    ui.dom.onKey("#editor", function (e) {
-                        if (e.keyCode == 9) {
-                            e.preventDefault()
-                            document.execCommand('insertHTML', false, '&#009');
-                        }
-                    })
-                    ui.dom.onPaste("#editor", function (e) {
-                        e.preventDefault();
-                        const text = e.clipboardData.getData("text/plain");
-                        document.execCommand("insertText", false, text);
-                    })
+
                     ui.dom.onClick("#save", function (e) {
                         e.preventDefault();
                         ui.api.post("/api/page.update/{{.Data.Filename}}", {
                             filename: ui.dom.el("#filename").value,
-                            content: editor.innerText
+                            content: editor.getText()
                         })
                             .then(data => {
                                 ui.dom.hide("#validation")
