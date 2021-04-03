@@ -58,7 +58,7 @@ storage: .storage
 
 ## Running as `systemd` service
 
-# Service file example
+### Service file example
 
 ```
 [Unit]
@@ -81,7 +81,7 @@ WantedBy=multi-user.target
   expects `config.yml` to be in the same directory as executable
 - place file in `/etc/systemd/system/mdwiki.service`
 
-## Running service
+### Running service
 
 - start service: `systemctl start mdwiki`
 - stop service: `systemctl stop mdwiki`
