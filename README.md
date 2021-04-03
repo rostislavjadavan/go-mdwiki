@@ -58,7 +58,36 @@ storage: .storage
 
 ## Running as `systemd` service
 
-See [README.md](service/README.md) in  `/service` for information.  
+# Service file example
+
+```
+[Unit]
+Description=mdwiki
+After=network.target
+Wants=network-online.target
+
+[Service]
+Restart=always
+Type=simple
+WorkingDirectory=/opt
+ExecStart=/opt/mdwiki
+
+[Install]
+WantedBy=multi-user.target
+```
+
+- update `ExecStart` and `WorkingDirectory` based on installation path
+- working directory needs to be set because `mdwiki`
+  expects `config.yml` to be in the same directory as executable
+- place file in `/etc/systemd/system/mdwiki.service`
+
+## Running service
+
+- start service: `systemctl start mdwiki`
+- stop service: `systemctl stop mdwiki`
+- service status: `systemctl status mdwiki`
+- enable service: `systemctl enable mdwiki` (`enable` will hook the specified unit into relevant places, so that it will automatically start on boot)
+  
 
 ## Logo
 
