@@ -54,9 +54,6 @@ var TemplateFooter string
 //go:embed assets/style.css
 var CssStyle string
 
-//go:embed assets/codejar.js
-var JavascriptCodeJar string
-
 //go:embed assets/script.js
 var JavascriptScript string
 

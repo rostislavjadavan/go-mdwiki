@@ -8,7 +8,6 @@
 - one binary + config file
 - no user accounts
 - pages are stored as plain markdown files
-- codejar for editing markdown (https://github.com/antonmedv/codejar) with tab support
 - github theme (thanks to https://github.com/sindresorhus/github-markdown-css)
 - Echo used as underlying http framework (https://echo.labstack.com/)  
 - using golang 1.16 (because of embed feature)
