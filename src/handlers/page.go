@@ -5,6 +5,7 @@ import (
 	"github.com/rostislavjadavan/mdwiki/src/search"
 	"github.com/rostislavjadavan/mdwiki/src/storage"
 	"github.com/rostislavjadavan/mdwiki/src/ui"
+	"html"
 	"net/http"
 )
 
@@ -79,6 +80,7 @@ func EditHandler(e *echo.Echo, s *storage.Storage) func(c echo.Context) error {
 			return notFoundPage(err, e, c)
 		}
 
+		page.RawContent = html.EscapeString(page.RawContent)
 		tpl, err := ui.Render(ui.TemplateEdit, page)
 		if err != nil {
 			return errorPage(err, e, c)
