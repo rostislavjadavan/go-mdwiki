@@ -19,7 +19,7 @@
 
             {{ if gt (len .Data.Pages) 0 }}
             <p>
-                <button id="empty-trash">Empty trash</button>
+                <button id="action-empty-trash">Empty trash</button>
                 <i>This will delete all pages forever without any confirmation. Be careful!</i> 😱
             </p>
             <ul>
@@ -29,9 +29,11 @@
             </ul>
             <script type="text/javascript">
                 ui.dom.onLoad(function () {
-                    ui.dom.onClick("#empty-trash", function (e) {
+                    ui.dom.onClick("#action-empty-trash", function (e) {
                         e.preventDefault()
-                        ui.api.post("/api/trash.empty", {}).then(data => ui.browser.redirect(data.redirect))
+                        ui.api
+                            .post("/api/trash.empty", {})
+                            .then(data => ui.browser.redirect(data.redirect))
                     })
                 })
             </script>

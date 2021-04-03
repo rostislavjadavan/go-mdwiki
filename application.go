@@ -30,21 +30,23 @@ func main() {
 	e.GET("/static/favicon.png", handlers.StaticHandler(ui.ImageFaviconPng, handlers.MimePng, e))
 
 	// RPC like API
-	e.POST("/api/page.create", api.CreatePageHandler(e, s))
-	e.POST("/api/page.update/:page", api.UpdatePageHandler(e, s))
-	e.POST("/api/trash.empty", api.EmptyTrashHandler(e, s))
+	e.POST("/api/page.create", api.PageCreateHandler(e, s))
+	e.POST("/api/page.update/:page", api.PageUpdateHandler(e, s))
+	e.POST("/api/page.delete", api.PageDeleteHandler(e, s))
+	e.POST("/api/trash.empty", api.TrashEmptyHandler(e, s))
+	e.POST("/api/trash.restore", api.TrashRestoreHandler(e, s))
+	e.POST("/api/version.restore", api.VersionRestoreHandler(e, s))
 
 	// UI
 	e.GET("/search", handlers.SearchHandler(e, s))
 	e.GET("/trash", handlers.TrashHandler(e, s))
 	e.GET("/trash/:page", handlers.TrashPageHandler(e, s))
-	e.GET("/restore/:page", handlers.DoRestoreHandler(e, s))
 	e.GET("/list", handlers.ListHandler(e, s))
 	e.GET("/create", handlers.CreateHandler(e, s))
 	e.GET("/edit/:page", handlers.EditHandler(e, s))
-	e.GET("/delete/:page", handlers.DeleteHandler(e, s))
-	e.GET("/dodelete/:page", handlers.DoDeleteHandler(e, s))
 	e.GET("/", handlers.PageHandler(e, s))
+	e.GET("/:page/version", handlers.PageVersionsHandler(e, s))
+	e.GET("/:page/version/:ver", handlers.PageVersionHandler(e, s))
 	e.GET("/:page", handlers.PageHandler(e, s))
 
 	e.Logger.Fatal(e.Start(cfg.Host + ":" + cfg.Port))

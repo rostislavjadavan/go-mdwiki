@@ -32,7 +32,7 @@ func Search(query string, s *storage.Storage) (*Result, error) {
 		PageContent: make([]searchResult, 0),
 	}
 
-	pages, err := s.ListPages()
+	pages, err := s.PageList()
 	if err != nil {
 		return &result, err
 	}
@@ -60,7 +60,7 @@ func Search(query string, s *storage.Storage) (*Result, error) {
 		}
 
 		// Search in content
-		markdownContent, _ := s.LoadRawPageContent(page.Filename)
+		markdownContent, _ := s.PageRawContent(page.Filename)
 		content := stripmd.Strip(markdownContent)
 		lines := strings.Split(content, "\n")
 

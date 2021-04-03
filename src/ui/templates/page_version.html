@@ -11,8 +11,8 @@
 <div class="wrap container">
     <div class="row">
         <div class="col-xs-12">
-            <div class="trash-wrap">
-                <button id="action-restore" class="mb-1">Restore</button>
+            <div class="version-wrap">
+                <button id="action-restore" class="mb-1">Restore version</button>
                 {{.Data.Content}}
             </div>
             <script type="text/javascript">
@@ -20,7 +20,7 @@
                     ui.dom.onClick("#action-restore", function (e) {
                         e.preventDefault()
                         ui.api
-                            .post("/api/trash.restore", {filename: "{{.Data.Filename}}"})
+                            .post("/api/version.restore", {filename: "{{.Data.Filename}}"})
                             .then(data => ui.browser.redirect(data.redirect))
                     })
                 })

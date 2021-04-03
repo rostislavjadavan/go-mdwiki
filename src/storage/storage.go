@@ -2,12 +2,8 @@ package storage
 
 import (
 	"github.com/rostislavjadavan/mdwiki/src/config"
-	"io/ioutil"
 	"os"
 	"path"
-	"sort"
-	"strings"
-	"time"
 )
 
 type Storage struct {
@@ -16,6 +12,8 @@ type Storage struct {
 
 type Page struct {
 	Filename   string
+	Name       string
+	Version    int64
 	Content    string
 	RawContent string
 }
@@ -27,156 +25,41 @@ func CreateStorage(config *config.AppConfig) (*Storage, error) {
 	return s, nil
 }
 
-func (s *Storage) CreateNewPage(filename string) (*Page, error) {
-	if !strings.HasSuffix(filename, ".md") {
-		filename = filename + ".md"
-	}
-	err := ioutil.WriteFile(path.Join(s.config.Storage, "pages", filename), []byte("# "+filename), defaultFilePermission)
-	if err != nil {
-		return nil, err
-	}
-	return s.LoadPage(filename)
-}
+var starterHomeMdContent = `# Welcome to your personal wiki!
 
-func (s *Storage) LoadPage(filename string) (*Page, error) {
-	content, err := ioutil.ReadFile(path.Join(s.config.Storage, "pages", filename))
-	if err != nil {
-		return nil, err
-	}
-	return &Page{
-		Filename:   filename,
-		Content:    ToMarkdown(content),
-		RawContent: string(content[:]),
-	}, nil
-}
+This is your homepage and you can edit it by using links in the top panel.
 
-func (s *Storage) LoadTrashPage(filename string) (*Page, error) {
-	content, err := ioutil.ReadFile(path.Join(s.config.Storage, "trash", filename))
-	if err != nil {
-		return nil, err
-	}
-	return &Page{
-		Filename:   filename,
-		Content:    ToMarkdown(content),
-		RawContent: string(content[:]),
-	}, nil
-}
+## Markdown syntax and extensions
 
-func (s *Storage) LoadRawPageContent(filename string) (string, error) {
-	content, err := ioutil.ReadFile(path.Join(s.config.Storage, "pages", filename))
-	if err != nil {
-		return "", err
-	}
-	return string(content[:]), nil
-}
+- https://www.markdownguide.org/basic-syntax/
+- https://github.com/gomarkdown/markdown#extensions
 
-func (s *Storage) DeletePage(page *Page) error {
-	return os.Rename(path.Join(s.config.Storage, "pages", page.Filename), path.Join(s.config.Storage, "trash", page.Filename))
-}
+`
 
-func (s *Storage) RestorePage(page *Page) error {
-	return os.Rename(path.Join(s.config.Storage, "trash", page.Filename), path.Join(s.config.Storage, "pages", page.Filename))
-}
-
-func (s *Storage) UpdatePageContent(content string, page *Page) error {
-	err := ioutil.WriteFile(path.Join(s.config.Storage, "pages", page.Filename), []byte(content), defaultFilePermission)
+func initStorage(s *Storage) error {
+	err := os.MkdirAll(path.Join(s.config.Storage, "pages"), defaultDirectoryPermission)
 	if err != nil {
 		return err
 	}
-	page.RawContent = content
-	page.Content = ToMarkdown([]byte(content))
-	return nil
-}
-
-func (s *Storage) RenamePage(newFilename string, page *Page) error {
-	err := os.Rename(path.Join(s.config.Storage, "pages", page.Filename), path.Join(s.config.Storage, "pages", newFilename))
+	err = os.MkdirAll(path.Join(s.config.Storage, "trash"), defaultDirectoryPermission)
 	if err != nil {
 		return err
 	}
-	page.Filename = newFilename
-	return nil
-}
-
-type PageInfo struct {
-	Filename string
-	ModTime  time.Time
-}
-
-func (s *Storage) ListPages() ([]PageInfo, error) {
-	dir, err := os.Open(path.Join(s.config.Storage, "pages"))
-	if err != nil {
-		return nil, err
-	}
-
-	files, err := dir.Readdir(0)
-	if err != nil {
-		return nil, err
-	}
-
-	list := make([]PageInfo, 0)
-	for _, file := range files {
-		if !file.IsDir() && ValidateFilename(file.Name()) == nil {
-			list = append(list, PageInfo{
-				Filename: file.Name(),
-				ModTime:  file.ModTime(),
-			})
-		}
-	}
-
-	sort.Slice(list, func(i, j int) bool {
-		return list[i].Filename < list[j].Filename
-	})
-
-	return list, nil
-}
-
-func (s *Storage) ListTrash() ([]PageInfo, error) {
-	dir, err := os.Open(path.Join(s.config.Storage, "trash"))
-	if err != nil {
-		return nil, err
-	}
-
-	files, err := dir.Readdir(0)
-	if err != nil {
-		return nil, err
-	}
-
-	list := make([]PageInfo, 0)
-	for _, file := range files {
-		if !file.IsDir() && ValidateFilename(file.Name()) == nil {
-			list = append(list, PageInfo{
-				Filename: file.Name(),
-				ModTime:  file.ModTime(),
-			})
-		}
-	}
-
-	sort.Slice(list, func(i, j int) bool {
-		return list[i].Filename < list[j].Filename
-	})
-
-	return list, nil
-}
-
-func (s *Storage) EmptyTrash() error {
-	pages, err := s.ListTrash()
+	err = os.MkdirAll(path.Join(s.config.Storage, "versions"), defaultDirectoryPermission)
 	if err != nil {
 		return err
 	}
-	for _, p := range pages {
-		err := os.Remove(path.Join(s.config.Storage, "trash", p.Filename))
+
+	homeMd, err := fsExists(path.Join(s.config.Storage, "pages", "home.md"))
+	if err != nil {
+		return err
+	}
+	if !homeMd {
+		page, err := s.PageCreate("home.md")
 		if err != nil {
 			return err
 		}
+		s.PageContentUpdate(starterHomeMdContent, page)
 	}
-
 	return nil
-}
-
-func (s *Storage) PageExists(filename string) bool {
-	_, err := s.LoadPage(filename)
-	if err == nil {
-		return true
-	}
-	return false
 }
