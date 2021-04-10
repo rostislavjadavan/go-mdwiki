@@ -79,6 +79,10 @@ ui.editor  = function (query) {
             e.preventDefault()
             document.execCommand('insertHTML', false, '&#009');
         }
+        if (e.keyCode == 13) {
+            e.preventDefault()
+            document.execCommand('insertLineBreak')
+        }
     })
     ui.dom.onPaste(query, function (e) {
         e.preventDefault();
