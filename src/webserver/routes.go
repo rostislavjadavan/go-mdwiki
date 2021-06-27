@@ -1,29 +1,14 @@
-package main
+package webserver
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/gommon/log"
 	"github.com/rostislavjadavan/mdwiki/src/api"
-	"github.com/rostislavjadavan/mdwiki/src/config"
 	"github.com/rostislavjadavan/mdwiki/src/handlers"
 	"github.com/rostislavjadavan/mdwiki/src/storage"
 	"github.com/rostislavjadavan/mdwiki/src/ui"
 )
 
-func main() {
-	cfg, err := config.LoadConfig("config.yml")
-	if err != nil {
-		panic(err)
-	}
-
-	s, err := storage.CreateStorage(cfg)
-	if err != nil {
-		panic(err)
-	}
-
-	e := echo.New()
-	e.Logger.SetLevel(log.DEBUG)
-
+func SetRoutes(e *echo.Echo, s *storage.Storage) {
 	// Static files
 	e.GET("/static/style.css", handlers.StaticHandler(ui.CssStyle, handlers.MimeCss, e))
 	e.GET("/static/script.js", handlers.StaticHandler(ui.JavascriptScript, handlers.MimeJavascript, e))
@@ -48,6 +33,4 @@ func main() {
 	e.GET("/:page/version", handlers.PageVersionsHandler(e, s))
 	e.GET("/:page/version/:ver", handlers.PageVersionHandler(e, s))
 	e.GET("/:page", handlers.PageHandler(e, s))
-
-	e.Logger.Fatal(e.Start(cfg.Host + ":" + cfg.Port))
 }
